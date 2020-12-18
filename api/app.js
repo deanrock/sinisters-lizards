@@ -2,23 +2,44 @@ const Koa = require('koa');
 const koaRouter = require("koa-router");
 var proxy = require('koa-proxy');
 const { exec } = require("child_process");
-const SSH2Promise = require('ssh2-promise');
 const mongo = require('koa-mongo')
+const fs = require('fs')
+const runTests = require('./runTests')
 
 // runTests(['us-east-1', 'eu-central-1'],{});
 
 const app = new Koa();
 const router = new koaRouter();
 
-app.use(mongo({
-    host: 'localhost',
-    port: 27017,
-    db: 'test',
-    authSource: 'admin',
-    max: 100,
-    min: 1,
-    acquireTimeoutMillis: 100
-  }));
+const testRegions = [
+    "us-east-2",
+    "us-west-1",
+    "us-west-2"
+];
+
+let mongoDetails = {};
+
+if ('ORMONGO_RS_URL' in process.env) {
+    mongoDetails = {
+        uri: process.env['ORMONGO_RS_URL'],
+        max: 100,
+        min: 1
+    }
+} else {
+    mongoDetails = {
+        host: 'localhost',
+        port: 27017,
+        db: 'test',
+        authSource: 'admin',
+        max: 100,
+        min: 1,
+        acquireTimeoutMillis: 100
+      }
+}
+
+console.log(mongoDetails);
+
+app.use(mongo(mongoDetails));
 
 router.get("/regions", async (ctx) => {
     ctx.body = "regions";
@@ -31,29 +52,58 @@ router.post("/regions", async (ctx) => {
 
 //return all tests (pending, error, finished)
 router.get("/tests", async (ctx) => {
-    //ctx.body = "regions";
-    //const result = await ctx.db.collection('tests').find({status});
-    const result = ctx.body = await ctx.db.collection('tests').find().toArray()
-
+    const result = await ctx.db.collection('tests').find().toArray()
     ctx.body = result;
 });
 
 //start new test - returns string:testId params:{regions:[], config{t: "", r: "", v:""}} 
 router.post("/tests", async (ctx) => {
-    const result = await ctx.db.collection('tests').insert({ status: 'pending' });
-    const testId = result.ops[0]._id.toString();
+    const body = ctx.request.body;
+    const args = body.args;
+    const parsedArgs = {args: ["-c", args.concurrency, "-d", args.duration, "-R", args.requests, "-L", args.url ]};
+
+    const regions = body.regions;
+
+    const dbInsertion = await ctx.db.collection('tests').insert({ status: 'pending'});
+    const testId = dbInsertion.ops[0]._id.toString();
     ctx.body = testId;
+    runTestWrapper(ctx,testId, regions, parsedArgs);
 });
+
+let runTestWrapper = async(ctx, testId, regions, args)=> {
+    let results = await runTests(regions, args);
+    //const result = await ctx.db.collection('tests').insert({ status: 'pending' });
+    console.log("tests inished writing to db");
+    ctx.db.collection('tests').updateOne(
+        {"_id" : mongo.ObjectId(testId)},
+        {$set: { 
+            status : "finished",
+            results: results
+        }},
+        {upsert: true}
+    );
+}
 
 //get test by id
 router.get("/tests/:id", async (ctx) => {
-    ctx.body = ctx.params;
+    let testId = ctx.params.id;
+    console.log(testId);
+    console.log(typeof(testId));
+
+    let test = await ctx.db.collection('tests').findOne(
+        {"_id" : mongo.ObjectId(testId)}
+    )
+    ctx.body = test;
+});
+
+router.get("/mock/tests/:id", async (ctx) => {
+    ctx.body = JSON.parse(fs.readFileSync('./mock-details.json', 'utf8'));
 });
 
 // Vue
 app.use(proxy({
     host:  'http://localhost:8080',
-    match: /^\/(ui|css|js)\//
+    match: /^\/(ui|css|js|img)\//
 }));
 
 let vue = exec("npm run serve", {

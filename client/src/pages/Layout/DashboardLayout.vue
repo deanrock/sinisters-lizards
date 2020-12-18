@@ -7,10 +7,10 @@
       :sidebar-background-image="sidebarBackgroundImage"
     >
       <mobile-menu slot="content"></mobile-menu>
-      <sidebar-link to="/dashboard">
+     <!-- <sidebar-link to="/dashboard">
         <md-icon>dashboard</md-icon>
         <p>Dashboard</p>
-      </sidebar-link>
+      </sidebar-link> -->
       
       <!-- only nice to have
       
@@ -26,14 +26,8 @@
         <p>Tests</p>
       </sidebar-link>
        
-      <hr> 
-
-      <sidebar-link to="/user">
-        <md-icon>person</md-icon>
-        <p>User Profile</p>
-      </sidebar-link>
-    </side-bar>
-
+      <hr>
+</side-bar>
     <div class="main-panel">
       <top-navbar></top-navbar>
 
