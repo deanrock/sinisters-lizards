@@ -66,7 +66,7 @@ router.get("/tests", async (ctx) => {
 router.post("/tests", async (ctx) => {
     const body = ctx.request.body;
     console.log(util.inspect(body, {depth:null, colors:true}));
-    const parsedArgs = {args: ["-c", body.concurrency, "-d", body.duration, "-R", body.requests, "-L", body.url ]};
+    const parsedArgs = {args: ["-c", body.concurrency, "-d", body.duration, "-R", body.rate, "-L", body.url ]};
 
     const regions = body.regions;
 
