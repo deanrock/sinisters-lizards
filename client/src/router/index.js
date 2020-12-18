@@ -1,17 +1,29 @@
 import { createWebHistory, createRouter } from "vue-router";
-import Bar from "@/components/Bar.vue";
-import Foo from "@/components/Foo.vue";
+import Home from "@/components/Home.vue";
+import Regions from "@/components/Regions.vue";
+import Tests from "@/components/Tests.vue";
+import TestsDetails from "@/components/TestsDetails.vue";
 
 const routes = [
   {
-    path: "/bar",
+    path: "/home",
     name: "Home",
-    component: Bar,
+    component: Home,
   },
   {
-    path: "/foo",
-    name: "About",
-    component: Foo,
+    path: "/regions",
+    name: "Regions",
+    component: Regions,
+  },
+  {
+    path: "/tests",
+    name: "Test",
+    component: Tests,
+  },
+  {
+    path: "/tests/:id",
+    name: "Test details",
+    component: TestsDetails,
   },
 ];
 
