@@ -3,9 +3,11 @@ const koaRouter = require("koa-router");
 var proxy = require('koa-proxy');
 const { exec } = require("child_process");
 const SSH2Promise = require('ssh2-promise');
+const mongo = require('koa-mongo')
 
 const app = new Koa();
 const router = new koaRouter();
+app.use(mongo())
 
 router.get("/regions", async (ctx) => {
     ctx.body = "regions";
@@ -23,7 +25,9 @@ router.get("/tests", async (ctx) => {
 
 //start new test - returns string:testId params:{regions:[], config{t: "", r: "", v:""}} 
 router.post("/tests", async (ctx) => {
-    ctx.body = "regions";
+    const result = await ctx.db.collection('tests').insert({ status: 'pending' });
+    const testId = result.ops[0]._id.toString();
+    ctx.body = testId;
 });
 
 //get test by id
