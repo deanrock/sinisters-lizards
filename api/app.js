@@ -38,20 +38,24 @@ router.post("/regions", async (ctx) => {
 
 //return all tests (pending, error, finished)
 router.get("/tests", async (ctx) => {
-    const result = ctx.body = await ctx.db.collection('tests').find().toArray()
+    const result = await ctx.db.collection('tests').find().toArray()
     ctx.body = result;
 });
 
 //start new test - returns string:testId params:{regions:[], config{t: "", r: "", v:""}} 
-router.get("/post-tests", async (ctx) => {
-    const dbInsertion = await ctx.db.collection('tests').insert({ status: 'pending' });
+router.post("/tests", async (ctx) => {
+    const body = ctx.request.body;
+    const regions = body.regions;
+    const args = body.args;
+
+    const dbInsertion = await ctx.db.collection('tests').insert({ status: 'pending'});
     const testId = dbInsertion.ops[0]._id.toString();
     ctx.body = testId;
-    runTestWrapper(ctx,testId);
+    runTestWrapper(ctx,testId, regions, args);
 });
 
-let runTestWrapper = async(ctx, testId)=> {
-    let results = await runTests(testRegions, {args: ['-c', '2', '-d', '2', '-R', '10', 'http://celtra.com']});
+let runTestWrapper = async(ctx, testId, regions, args)=> {
+    let results = await runTests(regions, args);
     //const result = await ctx.db.collection('tests').insert({ status: 'pending' });
     console.log("tests inished writing to db");
     ctx.db.collection('tests').updateOne(
@@ -66,9 +70,14 @@ let runTestWrapper = async(ctx, testId)=> {
 
 //get test by id
 router.get("/tests/:id", async (ctx) => {
-    ctx.db.collection('tests').findOne(
-        {"_id" : testId}
-    );
+    let testId = ctx.params.id;
+    console.log(testId);
+    console.log(typeof(testId));
+
+    let test = await ctx.db.collection('tests').findOne(
+        {"_id" : mongo.ObjectId(testId)}
+    )
+    ctx.body = test;
 });
 
 // Vue
