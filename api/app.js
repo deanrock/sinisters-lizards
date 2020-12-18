@@ -51,7 +51,7 @@ let vue = exec("npm run serve", {
     },
 }, (error, stdout, stderr) => {});
 vue.stdout.pipe(process.stdout);
-//vue.stderr.pipe(process.stderr);
+vue.stderr.pipe(process.stderr);
 // End Vue
 
 app.use(router.routes()).use(router.allowedMethods());
