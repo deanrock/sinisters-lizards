@@ -114,7 +114,7 @@ export default {
           })
         };
 
-      const response = await fetch("https://jsonplaceholder.typicode.com/posts", requestOptions);
+      const response = await fetch("/tests", requestOptions);
       const data = await response.json();
   }
 
