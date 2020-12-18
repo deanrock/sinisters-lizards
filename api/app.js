@@ -55,6 +55,10 @@ app.use(proxy({
 
 let vue = exec("npm run serve", {
     cwd: '../client/',
+    env: {
+        'PATH': process.env['PATH'],
+        'PORT': '8080'
+    },
 }, (error, stdout, stderr) => {});
 vue.stdout.pipe(process.stdout);
 vue.stderr.pipe(process.stderr);
