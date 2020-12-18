@@ -59,13 +59,15 @@ router.get("/tests", async (ctx) => {
 //start new test - returns string:testId params:{regions:[], config{t: "", r: "", v:""}} 
 router.post("/tests", async (ctx) => {
     const body = ctx.request.body;
-    const regions = body.regions;
     const args = body.args;
+    const parsedArgs = {args: ["-c", args.concurrency, "-d", args.duration, "-R", args.requests, "-L", args.url ]};
+
+    const regions = body.regions;
 
     const dbInsertion = await ctx.db.collection('tests').insert({ status: 'pending'});
     const testId = dbInsertion.ops[0]._id.toString();
     ctx.body = testId;
-    runTestWrapper(ctx,testId, regions, args);
+    runTestWrapper(ctx,testId, regions, parsedArgs);
 });
 
 let runTestWrapper = async(ctx, testId, regions, args)=> {
