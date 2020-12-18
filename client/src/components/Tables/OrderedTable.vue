@@ -15,7 +15,7 @@
           </p>
           
         </md-table-cell>
-        <md-table-cell md-label=""><a :href="'/#/tests/' + item._id"> Details</a> </md-table-cell>
+        <md-table-cell md-label=""><a :href="'#/tests/' + item._id"> Details</a> </md-table-cell>
       </md-table-row>
     </md-table>
   </div>
@@ -44,14 +44,14 @@ export default {
         },
   methods: {
     fetchTests() {
-      const promise = new Promise( (res,rej) => {
-          res(`[{"_id": "a9b72e3b-9a21-426e-bc0f-867e2e850ce6", "name": "testname1", "status": "pending"}, {"_id": "a9b72e3b-9a21-426e-bc0f-867e2e850ce7", "name": "testname2", "status": "done"}]`);
-      });
+      // const promise = new Promise( (res,rej) => {
+      //     res(`[{"_id": "a9b72e3b-9a21-426e-bc0f-867e2e850ce6", "name": "testname1", "status": "pending"}, {"_id": "a9b72e3b-9a21-426e-bc0f-867e2e850ce7", "name": "testname2", "status": "done"}]`);
+      // });
 
-      //var promise = fetch("localhost:3000/tests")
+      var promise = fetch("/tests")
       promise
-        .then(d => JSON.parse(d))
-        //.then(res => res.json())
+        //.then(d => JSON.parse(d))
+        .then(res => res.json())
         .then(d => {
           this.testResults = d
           this.items = d
