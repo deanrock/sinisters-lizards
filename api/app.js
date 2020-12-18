@@ -2,8 +2,8 @@ const Koa = require('koa');
 const koaRouter = require("koa-router");
 var proxy = require('koa-proxy');
 const { exec } = require("child_process");
-const SSH2Promise = require('ssh2-promise');
 const mongo = require('koa-mongo')
+const fs = require('fs')
 
 // runTests(['us-east-1', 'eu-central-1'],{});
 
@@ -48,6 +48,10 @@ router.post("/tests", async (ctx) => {
 //get test by id
 router.get("/tests/:id", async (ctx) => {
     ctx.body = ctx.params;
+});
+
+router.get("/mock/tests/:id", async (ctx) => {
+    ctx.body = JSON.parse(fs.readFileSync('./mock-details.json', 'utf8'));
 });
 
 // Vue

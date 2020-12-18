@@ -50,7 +50,7 @@ let runTests = async (regions, config) => {
 /*
 (async function(){
     let results = await runTests(regions, {args: ['-c', '2', '-d', '2', '-R', '10', '-L', 'http://celtra.com']});
-    console.log(JSON.stringify(results, null, 4));
+    console.log(JSON.stringify(results));
     exit
 })();
 */
