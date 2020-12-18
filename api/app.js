@@ -24,7 +24,11 @@ if ('ORMONGO_RS_URL' in process.env) {
     mongoDetails = {
         uri: process.env['ORMONGO_RS_URL'],
         max: 100,
-        min: 1
+        min: 1,
+        db: 'test',
+        authSource: 'admin',
+        user: 'test',
+        pass: 'hdf8w3fg786w4e3ghv9b8w54g6tbeg67fgtb4376vq'
     }
 } else {
     mongoDetails = {
