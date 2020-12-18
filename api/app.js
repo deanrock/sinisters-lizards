@@ -56,6 +56,11 @@ router.post("/regions", async (ctx) => {
 router.get("/tests", async (ctx) => {
     console.log("route get tests");
     const result = await ctx.db.collection('tests').find().toArray()
+
+    result.sort(function(a,b){
+        return new Date(b.createtime) - new Date(a.createtime);
+    });
+
     ctx.body = result;
 });
 
@@ -68,7 +73,7 @@ router.post("/tests", async (ctx) => {
 
     const regions = body.regions;
 
-    const dbInsertion = await ctx.db.collection('tests').insert({ status: 'pending', name: body.name});
+    const dbInsertion = await ctx.db.collection('tests').insert({ status: 'pending', name: body.name, createtime: new Date()});
     const testId = dbInsertion.ops[0]._id.toString();
     ctx.body = testId;
     console.log("prepared to run test with id: " +  testId);
