@@ -2,16 +2,23 @@ const Koa = require('koa');
 const koaRouter = require("koa-router");
 var proxy = require('koa-proxy');
 const { exec } = require("child_process");
-const runTests = require('./runTests');
+const SSH2Promise = require('ssh2-promise');
+const mongo = require('koa-mongo')
 
 // runTests(['us-east-1', 'eu-central-1'],{});
 
-const dbConfig = {
-
-}
-
 const app = new Koa();
 const router = new koaRouter();
+
+app.use(mongo({
+    host: 'localhost',
+    port: 27017,
+    db: 'test',
+    authSource: 'admin',
+    max: 100,
+    min: 1,
+    acquireTimeoutMillis: 100
+  }));
 
 router.get("/regions", async (ctx) => {
     ctx.body = "regions";
@@ -24,12 +31,18 @@ router.post("/regions", async (ctx) => {
 
 //return all tests (pending, error, finished)
 router.get("/tests", async (ctx) => {
-    ctx.body = "regions";
+    //ctx.body = "regions";
+    //const result = await ctx.db.collection('tests').find({status});
+    const result = ctx.body = await ctx.db.collection('tests').find().toArray()
+
+    ctx.body = result;
 });
 
 //start new test - returns string:testId params:{regions:[], config{t: "", r: "", v:""}} 
 router.post("/tests", async (ctx) => {
-    ctx.body = "regions";
+    const result = await ctx.db.collection('tests').insert({ status: 'pending' });
+    const testId = result.ops[0]._id.toString();
+    ctx.body = testId;
 });
 
 //get test by id
@@ -51,7 +64,7 @@ let vue = exec("npm run serve", {
     },
 }, (error, stdout, stderr) => {});
 vue.stdout.pipe(process.stdout);
-//vue.stderr.pipe(process.stderr);
+vue.stderr.pipe(process.stderr);
 // End Vue
 
 app.use(router.routes()).use(router.allowedMethods());
