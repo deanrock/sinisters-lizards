@@ -9,7 +9,16 @@ const mongo = require('koa-mongo')
 
 const app = new Koa();
 const router = new koaRouter();
-app.use(mongo())
+
+app.use(mongo({
+    host: 'localhost',
+    port: 27017,
+    db: 'test',
+    authSource: 'admin',
+    max: 100,
+    min: 1,
+    acquireTimeoutMillis: 100
+  }));
 
 router.get("/regions", async (ctx) => {
     ctx.body = "regions";
@@ -22,7 +31,11 @@ router.post("/regions", async (ctx) => {
 
 //return all tests (pending, error, finished)
 router.get("/tests", async (ctx) => {
-    ctx.body = "regions";
+    //ctx.body = "regions";
+    //const result = await ctx.db.collection('tests').find({status});
+    const result = ctx.body = await ctx.db.collection('tests').find().toArray()
+
+    ctx.body = result;
 });
 
 //start new test - returns string:testId params:{regions:[], config{t: "", r: "", v:""}} 
