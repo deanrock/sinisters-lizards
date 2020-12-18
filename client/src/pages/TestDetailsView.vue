@@ -152,8 +152,8 @@
           <template slot="content">
             <span class="md-nav-tabs-title">Regions:</span>
             <md-tabs class="md-success" v-model="results" md-alignment="left">
-              <md-tab  id="tab-home" slot-scope="{ item }" :md-label="item.region" md-icon="cloud">
-                ff
+              <md-tab  id="tab-home" slot="md-tab" slot-scope="{ item }" :md-label="item.region"  md-icon="cloud">
+                ff{{ item.region }}
                 <nav-tabs-table></nav-tabs-table>
               </md-tab>
             </md-tabs>
@@ -233,6 +233,14 @@ export default {
         }
       };
     }
+  },
+  mounted() {
+    fetch("/mock/tests/44")
+                .then(res => res.json())
+                .then(d => {
+                  this.results = d
+                })
+                .catch(error => console.error(error))
   },
   data() {
     return {
