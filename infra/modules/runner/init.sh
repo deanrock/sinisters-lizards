@@ -1,4 +1,5 @@
 #!/bin/bash
 set -Eeuo pipefail
 
-sudo yum install -y wrk
+wget https://artlec-dejan-public.s3.eu-central-1.amazonaws.com/wrk2
+chmod +x wrk2

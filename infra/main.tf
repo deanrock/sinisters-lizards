@@ -53,19 +53,11 @@ module "eu-central-1" {
   public_key = tls_private_key.this.public_key_openssh
 }
 
-/*
-module "eu-south-1" {
-  source     = "./modules/runner"
-  region     = "eu-south-1"
-  public_key = tls_private_key.this.public_key_openssh
-}
-
 module "eu-north-1" {
   source     = "./modules/runner"
   region     = "eu-north-1"
   public_key = tls_private_key.this.public_key_openssh
 }
-*/
 
 module "ap-northeast-1" {
   source     = "./modules/runner"
@@ -102,11 +94,3 @@ module "sa-east-1" {
   region     = "sa-east-1"
   public_key = tls_private_key.this.public_key_openssh
 }
-
-/*
-module "af-south-1" {
-  source     = "./modules/runner"
-  region     = "af-south-1"
-  public_key = tls_private_key.this.public_key_openssh
-}
-*/
