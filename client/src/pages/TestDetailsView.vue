@@ -146,7 +146,7 @@ export default {
     }
   },
  beforeMount: async function() {
-   let r = await fetch('/mock/tests/' + this.$route.params.id);
+   let r = await fetch('/tests/' + this.$route.params.id);
       this.results = await r.json();
       console.log('r')
   },
