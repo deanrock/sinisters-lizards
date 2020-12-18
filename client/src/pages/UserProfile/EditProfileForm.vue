@@ -93,7 +93,8 @@ export default {
         };
 
       const response = await fetch("/tests", requestOptions);
-      const data = await response.json();
+      const data = await response.text();
+      location.reload();
     }
   },
   data() {
