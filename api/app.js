@@ -2,7 +2,13 @@ const Koa = require('koa');
 const koaRouter = require("koa-router");
 var proxy = require('koa-proxy');
 const { exec } = require("child_process");
-const SSH2Promise = require('ssh2-promise');
+const runTests = require('./runTests');
+
+// runTests(['us-east-1', 'eu-central-1'],{});
+
+const dbConfig = {
+
+}
 
 const app = new Koa();
 const router = new koaRouter();
@@ -45,7 +51,7 @@ let vue = exec("npm run serve", {
     },
 }, (error, stdout, stderr) => {});
 vue.stdout.pipe(process.stdout);
-vue.stderr.pipe(process.stderr);
+//vue.stderr.pipe(process.stderr);
 // End Vue
 
 app.use(router.routes()).use(router.allowedMethods());
