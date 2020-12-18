@@ -78,7 +78,7 @@ router.get("/mock/tests/:id", async (ctx) => {
 // Vue
 app.use(proxy({
     host:  'http://localhost:8080',
-    match: /^\/(ui|css|js)\//
+    match: /^\/(ui|css|js|img)\//
 }));
 
 let vue = exec("npm run serve", {
