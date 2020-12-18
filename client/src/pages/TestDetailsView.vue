@@ -147,7 +147,9 @@ export default {
   },
  beforeMount: async function() {
    let r = await fetch('/tests/' + this.$route.params.id);
-      this.results = await r.json();
+   let xx = await r.json();
+      this.results = xx.results;
+      console.log(this.results)
       console.log('r')
   },
   data() {
