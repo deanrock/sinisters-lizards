@@ -5,9 +5,10 @@ const { exec } = require("child_process");
 const mongo = require('koa-mongo')
 const fs = require('fs')
 const runTests = require('./runTests')
+const util = require('util');
+const bodyParser = require('koa-bodyparser');
 
 // runTests(['us-east-1', 'eu-central-1'],{});
-
 const app = new Koa();
 const router = new koaRouter();
 
@@ -23,7 +24,11 @@ if ('ORMONGO_RS_URL' in process.env) {
     mongoDetails = {
         uri: process.env['ORMONGO_RS_URL'],
         max: 100,
-        min: 1
+        min: 1,
+        db: 'test',
+        authSource: 'admin',
+        user: 'test',
+        pass: 'hdf8w3fg786w4e3ghv9b8w54g6tbeg67fgtb4376vq'
     }
 } else {
     mongoDetails = {
@@ -40,6 +45,7 @@ if ('ORMONGO_RS_URL' in process.env) {
 console.log(mongoDetails);
 
 app.use(mongo(mongoDetails));
+app.use(bodyParser());
 
 router.get("/regions", async (ctx) => {
     ctx.body = "regions";
@@ -59,8 +65,8 @@ router.get("/tests", async (ctx) => {
 //start new test - returns string:testId params:{regions:[], config{t: "", r: "", v:""}} 
 router.post("/tests", async (ctx) => {
     const body = ctx.request.body;
-    const args = body.args;
-    const parsedArgs = {args: ["-c", args.concurrency, "-d", args.duration, "-R", args.requests, "-L", args.url ]};
+    console.log(util.inspect(body, {depth:null, colors:true}));
+    const parsedArgs = {args: ["-c", body.concurrency, "-d", body.duration, "-R", body.rate, "-L", body.url ]};
 
     const regions = body.regions;
 
@@ -73,7 +79,7 @@ router.post("/tests", async (ctx) => {
 let runTestWrapper = async(ctx, testId, regions, args)=> {
     let results = await runTests(regions, args);
     //const result = await ctx.db.collection('tests').insert({ status: 'pending' });
-    console.log("tests inished writing to db");
+    console.log("tests finished writing to db");
     ctx.db.collection('tests').updateOne(
         {"_id" : mongo.ObjectId(testId)},
         {$set: { 
@@ -114,7 +120,7 @@ let vue = exec("npm run serve", {
     },
 }, (error, stdout, stderr) => {});
 vue.stdout.pipe(process.stdout);
-vue.stderr.pipe(process.stderr);
+//vue.stderr.pipe(process.stderr);
 // End Vue
 
 app.use(router.routes()).use(router.allowedMethods());

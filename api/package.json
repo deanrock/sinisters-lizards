@@ -11,6 +11,7 @@
   "dependencies": {
     "child_process": "^1.0.2",
     "koa": "^2.13.0",
+    "koa-bodyparser": "^4.3.0",
     "koa-mongo": "^1.9.2",
     "koa-proxy": "^1.0.0-alpha.3",
     "koa-router": "^10.0.0",
