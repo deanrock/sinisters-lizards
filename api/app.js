@@ -17,6 +17,9 @@ const testRegions = [
     "us-west-2"
 ];
 
+ORMONGO_RS_URLmongodb://lon5-c15-2.mongo.objectrocket.com:43777,lon5-c15-0.mongo.objectrocket.com:43777,lon5-c15-1.mongo.objectrocket.com:43777/?replicaSet=85f67b4a3642435fb30e556e12b2cdae&ssl=true
+ORMONGO_URLmongodb://lon5-c15-2.mongo.objectrocket.com:43777?ssl=true
+
 app.use(mongo({
     host: 'localhost',
     port: 27017,
@@ -45,8 +48,10 @@ router.get("/tests", async (ctx) => {
 //start new test - returns string:testId params:{regions:[], config{t: "", r: "", v:""}} 
 router.post("/tests", async (ctx) => {
     const body = ctx.request.body;
-    const regions = body.regions;
     const args = body.args;
+    const parsedArgs = {args: ["-c", args.concurrency, "-d", args.duration, "-R", args.requests, "-L", args.url ]};
+
+    const regions = body.regions;
 
     const dbInsertion = await ctx.db.collection('tests').insert({ status: 'pending'});
     const testId = dbInsertion.ops[0]._id.toString();
