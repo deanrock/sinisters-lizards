@@ -102,7 +102,7 @@ export default {
       concurrency: 2,
       duration: 2,
       rate: 10,
-      url: "celtra.com",
+      url: "http://celtra.com",
       name: "Test name",
       username: null,
       disabled: null,
