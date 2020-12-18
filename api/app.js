@@ -5,6 +5,8 @@ const { exec } = require("child_process");
 const SSH2Promise = require('ssh2-promise');
 const mongo = require('koa-mongo')
 
+// runTests(['us-east-1', 'eu-central-1'],{});
+
 const app = new Koa();
 const router = new koaRouter();
 app.use(mongo())
@@ -49,7 +51,7 @@ let vue = exec("npm run serve", {
     },
 }, (error, stdout, stderr) => {});
 vue.stdout.pipe(process.stdout);
-vue.stderr.pipe(process.stderr);
+//vue.stderr.pipe(process.stderr);
 // End Vue
 
 app.use(router.routes()).use(router.allowedMethods());
