@@ -48,7 +48,7 @@ export default {
       //     res(`[{"_id": "a9b72e3b-9a21-426e-bc0f-867e2e850ce6", "name": "testname1", "status": "pending"}, {"_id": "a9b72e3b-9a21-426e-bc0f-867e2e850ce7", "name": "testname2", "status": "done"}]`);
       // });
 
-      var promise = fetch("tests")
+      var promise = fetch("/tests")
       promise
         //.then(d => JSON.parse(d))
         .then(res => res.json())
