@@ -53,20 +53,11 @@ app.use(proxy({
     match: /^\/(ui|css|js)\//
 }));
 
-exec("npm run serve", {
+let vue = exec("npm run serve", {
     cwd: '../client/',
-}, (error, stdout, stderr) => {
-    if (error) {
-        console.log(`error: ${error.message}`);
-        return;
-    }
-    if (stderr) {
-        console.log(`stderr: ${stderr}`);
-        return;
-    }
-    console.log(`stdout: ${stdout}`);
-});
-
+}, (error, stdout, stderr) => {});
+vue.stdout.pipe(process.stdout);
+vue.stderr.pipe(process.stderr);
 // End Vue
 
 app.use(router.routes()).use(router.allowedMethods());
