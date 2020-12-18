@@ -26,14 +26,8 @@
         <p>Tests</p>
       </sidebar-link>
        
-      <hr> 
-
-      <sidebar-link to="/user">
-        <md-icon>person</md-icon>
-        <p>User Profile</p>
-      </sidebar-link>
-    </side-bar>
-
+      <hr>
+</side-bar>
     <div class="main-panel">
       <top-navbar></top-navbar>
 
