@@ -43,7 +43,7 @@ function parseWrk(stdout) {
       for (var l=i+4; lines[l] != ''; ++l) {
         var nums = lines[l].trim().split(/[ \t]+/);
         if (nums.length != 4) break;
-        console.log('Histo: ', nums);
+        
         histogram.push({
           latency: Number(nums[0]),
           percentile: Number(nums[1]),

@@ -38,6 +38,7 @@ let runTest = async (region, config) => {
         'region': region,
         'config': config,
         'result': parseWrk(e),
+        'raw': e,
     };
 }
 
@@ -45,10 +46,12 @@ let runTests = async (regions, config) => {
     return Promise.all(regions.map((region) => runTest(region, config)));
 };
 
+
 /*
 (async function(){
-    let results = await runTests(regions, {args: ['-c', '2', '-d', '2', '-R', '10', 'http://celtra.com']});
-    console.log(results);
+    let results = await runTests(regions, {args: ['-c', '2', '-d', '2', '-R', '10', '-L', 'http://celtra.com']});
+    console.log(JSON.stringify(results, null, 4));
+    exit
 })();
 */
 
