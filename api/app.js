@@ -54,12 +54,14 @@ router.post("/regions", async (ctx) => {
 
 //return all tests (pending, error, finished)
 router.get("/tests", async (ctx) => {
+    console.log("route get tests");
     const result = await ctx.db.collection('tests').find().toArray()
     ctx.body = result;
 });
 
 //start new test - returns string:testId params:{regions:[], config{t: "", r: "", v:""}} 
 router.post("/tests", async (ctx) => {
+    console.log("route post test");
     const body = ctx.request.body;
     console.log(util.inspect(body, {depth:null, colors:true}));
     const parsedArgs = {args: ["-c", body.concurrency, "-d", body.duration, "-R", body.rate, "-L", body.url ]};
@@ -73,24 +75,28 @@ router.post("/tests", async (ctx) => {
 });
 
 let runTestWrapper = async(ctx, testId, regions, args)=> {
-    let results = await runTests(regions, args);
-    //const result = await ctx.db.collection('tests').insert({ status: 'pending' });
-    console.log("tests finished writing to db");
-    ctx.db.collection('tests').updateOne(
-        {"_id" : mongo.ObjectId(testId)},
-        {$set: { 
-            status : "finished",
-            results: results
-        }},
-        {upsert: true}
-    );
+    try{
+        let results = await runTests(regions, args);
+        //const result = await ctx.db.collection('tests').insert({ status: 'pending' });
+        console.log("tests finished writing to db");
+        ctx.db.collection('tests').updateOne(
+            {"_id" : mongo.ObjectId(testId)},
+            {$set: { 
+                status : "finished",
+                results: results
+            }},
+            {upsert: true}
+        );
+    }catch(err){
+        console.log(err)
+    }
 }
 
 //get test by id
 router.get("/tests/:id", async (ctx) => {
+    console.log("route get test with id:");
     let testId = ctx.params.id;
-    console.log(testId);
-    console.log(typeof(testId));
+    console.log(testId)
 
     let test = await ctx.db.collection('tests').findOne(
         {"_id" : mongo.ObjectId(testId)}
