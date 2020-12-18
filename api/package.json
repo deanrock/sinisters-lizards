@@ -10,6 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "koa": "^2.13.0",
+    "koa-proxy": "^1.0.0-alpha.3",
     "koa-router": "^10.0.0",
     "nodemon": "^2.0.6"
   }
