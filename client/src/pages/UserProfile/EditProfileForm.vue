@@ -93,16 +93,17 @@ export default {
         };
 
       const response = await fetch("/tests", requestOptions);
-      const data = await response.json();
+      const data = await response.text();
+      location.reload();
     }
   },
   data() {
     return {
       regions: [],
-      concurrency: 5,
-      duration: 50,
-      rate: 1000,
-      url: "test.com",
+      concurrency: 2,
+      duration: 2,
+      rate: 10,
+      url: "http://celtra.com",
       name: "Test name",
       username: null,
       disabled: null,

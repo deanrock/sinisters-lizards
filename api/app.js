@@ -20,15 +20,11 @@ const testRegions = [
 
 let mongoDetails = {};
 
-if ('ORMONGO_RS_URL' in process.env) {
+if ('MONGODB_URI' in process.env) {
     mongoDetails = {
-        uri: process.env['ORMONGO_RS_URL'],
+        uri: process.env['MONGODB_URI'],
         max: 100,
         min: 1,
-        db: 'test',
-        authSource: 'admin',
-        user: 'test',
-        pass: 'hdf8w3fg786w4e3ghv9b8w54g6tbeg67fgtb4376vq'
     }
 } else {
     mongoDetails = {
@@ -58,43 +54,55 @@ router.post("/regions", async (ctx) => {
 
 //return all tests (pending, error, finished)
 router.get("/tests", async (ctx) => {
+    console.log("route get tests");
     const result = await ctx.db.collection('tests').find().toArray()
+
+    result.sort(function(a,b){
+        return new Date(b.createtime) - new Date(a.createtime);
+    });
+
     ctx.body = result;
 });
 
 //start new test - returns string:testId params:{regions:[], config{t: "", r: "", v:""}} 
 router.post("/tests", async (ctx) => {
+    console.log("route post test");
     const body = ctx.request.body;
     console.log(util.inspect(body, {depth:null, colors:true}));
     const parsedArgs = {args: ["-c", body.concurrency, "-d", body.duration, "-R", body.rate, "-L", body.url ]};
 
     const regions = body.regions;
 
-    const dbInsertion = await ctx.db.collection('tests').insert({ status: 'pending'});
+    const dbInsertion = await ctx.db.collection('tests').insert({ status: 'pending', name: body.name, createtime: new Date()});
     const testId = dbInsertion.ops[0]._id.toString();
     ctx.body = testId;
+    console.log("prepared to run test with id: " +  testId);
     runTestWrapper(ctx,testId, regions, parsedArgs);
 });
 
 let runTestWrapper = async(ctx, testId, regions, args)=> {
-    let results = await runTests(regions, args);
-    //const result = await ctx.db.collection('tests').insert({ status: 'pending' });
-    console.log("tests finished writing to db");
-    ctx.db.collection('tests').updateOne(
-        {"_id" : mongo.ObjectId(testId)},
-        {$set: { 
-            status : "finished",
-            results: results
-        }},
-        {upsert: true}
-    );
+    try{
+        let results = await runTests(regions, args);
+        //const result = await ctx.db.collection('tests').insert({ status: 'pending' });
+        console.log("tests finished writing to db");
+        ctx.db.collection('tests').updateOne(
+            {"_id" : mongo.ObjectId(testId)},
+            {$set: { 
+                status : "finished",
+                results: results
+            }},
+            {upsert: true}
+        );
+    }catch(err){
+        console.log(err)
+    }
 }
 
 //get test by id
 router.get("/tests/:id", async (ctx) => {
+    console.log("route get test with id:");
     let testId = ctx.params.id;
-    console.log(testId);
-    console.log(typeof(testId));
+    console.log(testId)
 
     let test = await ctx.db.collection('tests').findOne(
         {"_id" : mongo.ObjectId(testId)}
