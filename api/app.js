@@ -4,16 +4,6 @@ var proxy = require('koa-proxy');
 const { exec } = require("child_process");
 const SSH2Promise = require('ssh2-promise');
 
-const sshconfig = {
-    host: '192.168.1.2',
-    username: 'ubuntu',
-    identity: '/here/is/my/key'
-  }
-
-const dbConfig = {
-
-}
-
 const app = new Koa();
 const router = new koaRouter();
 
@@ -40,12 +30,6 @@ router.post("/tests", async (ctx) => {
 router.get("/tests/:id", async (ctx) => {
     ctx.body = ctx.params;
 });
-
-//establish ssh tunnel and runs test
-let runTest = async () => {
-    //establish shh tunel and run tests
-    //save results into database
-   }
 
 // Vue
 app.use(proxy({
