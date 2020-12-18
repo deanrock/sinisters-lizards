@@ -17,15 +17,29 @@ const testRegions = [
     "us-west-2"
 ];
 
-app.use(mongo({
-    host: 'localhost',
-    port: 27017,
-    db: 'test',
-    authSource: 'admin',
-    max: 100,
-    min: 1,
-    acquireTimeoutMillis: 100
-  }));
+let mongoDetails = {};
+
+if ('ORMONGO_RS_URL' in process.env) {
+    mongoDetails = {
+        uri: process.env['ORMONGO_RS_URL'],
+        max: 100,
+        min: 1
+    }
+} else {
+    mongoDetails = {
+        host: 'localhost',
+        port: 27017,
+        db: 'test',
+        authSource: 'admin',
+        max: 100,
+        min: 1,
+        acquireTimeoutMillis: 100
+      }
+}
+
+console.log(mongoDetails);
+
+app.use(mongo(mongoDetails));
 
 router.get("/regions", async (ctx) => {
     ctx.body = "regions";
