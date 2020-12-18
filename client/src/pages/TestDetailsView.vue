@@ -1,9 +1,7 @@
 <template>
   <div class="content">
-    {{ $route.params.id }}
+    
 
-    Detailed view of test -> list all different regions results and add some nice graphs!
-    API: /tests/:testId
     <div class="md-layout">
       <div
         class="md-layout-item md-medium-size-100 md-xsmall-size-100 md-size-50"
@@ -46,93 +44,6 @@
       </div>
 
       <div
-        class="md-layout-item md-medium-size-50 md-xsmall-size-100 md-size-25"
-      >
-        <stats-card data-background-color="green">
-          <template slot="header">
-            <md-icon>store</md-icon>
-          </template>
-
-          <template slot="content">
-            <p class="category">Revenue</p>
-            <h3 class="title">$34,245</h3>
-          </template>
-
-          <template slot="footer">
-            <div class="stats">
-              <md-icon>date_range</md-icon>
-              Last 24 Hours
-            </div>
-          </template>
-        </stats-card>
-      </div>
-      <div
-        class="md-layout-item md-medium-size-50 md-xsmall-size-100 md-size-25"
-      >
-        <stats-card data-background-color="orange">
-          <template slot="header">
-            <md-icon>content_copy</md-icon>
-          </template>
-
-          <template slot="content">
-            <p class="category">Used Space</p>
-            <h3 class="title">
-              49/50
-              <small>GB</small>
-            </h3>
-          </template>
-
-          <template slot="footer">
-            <div class="stats">
-              <md-icon class="text-danger">warning</md-icon>
-              <a href="#pablo">Get More Space...</a>
-            </div>
-          </template>
-        </stats-card>
-      </div>
-      <div
-        class="md-layout-item md-medium-size-50 md-xsmall-size-100 md-size-25"
-      >
-        <stats-card data-background-color="red">
-          <template slot="header">
-            <md-icon>info_outline</md-icon>
-          </template>
-
-          <template slot="content">
-            <p class="category">Fixed Issues</p>
-            <h3 class="title">75</h3>
-          </template>
-
-          <template slot="footer">
-            <div class="stats">
-              <md-icon>local_offer</md-icon>
-              Tracked from Github
-            </div>
-          </template>
-        </stats-card>
-      </div>
-      <div
-        class="md-layout-item md-medium-size-50 md-xsmall-size-100 md-size-25"
-      >
-        <stats-card data-background-color="blue">
-          <template slot="header">
-            <i class="fab fa-twitter"></i>
-          </template>
-
-          <template slot="content">
-            <p class="category">Folowers</p>
-            <h3 class="title">+245</h3>
-          </template>
-
-          <template slot="footer">
-            <div class="stats">
-              <md-icon>update</md-icon>
-              Just Updated
-            </div>
-          </template>
-        </stats-card>
-      </div>
-      <div
         class="md-layout-item md-medium-size-100 md-xsmall-size-100 md-size-100"
       >
         <md-card>
@@ -151,10 +62,9 @@
         <nav-tabs-card>
           <template slot="content">
             <span class="md-nav-tabs-title">Regions:</span>
-            <md-tabs class="md-success" v-model="results" md-alignment="left">
-              <md-tab  id="tab-home" slot-scope="{ item }" :md-label="item.region" md-icon="cloud">
-                ff
-                <nav-tabs-table></nav-tabs-table>
+            <md-tabs class="md-success" md-alignment="left">
+              <md-tab  v-for="item in results"   :key="item.region" :md-label="item.region"  md-icon="cloud">
+                <nav-tabs-table v-bind:result="item"></nav-tabs-table>
               </md-tab>
             </md-tabs>
           </template>
@@ -166,21 +76,14 @@
 
 <script>
 import {
-  StatsCard,
   ChartCard,
   NavTabsCard,
   NavTabsTable,
   TestResultsTable
 } from "@/components";
 
-const promise = new Promise( (res,rej) => {
-    
-    res("[{data: data}]");
-});
-
 export default {
   components: {
-    StatsCard,
     ChartCard,
     NavTabsCard,
     NavTabsTable,
@@ -188,7 +91,12 @@ export default {
   },
   computed: {
     averageLatency: function() {
+      if (!this.results) {
+        return;
+      }
+      console.log(this.results)
       let latencies = this.results.map(function(i) { return i.result.latencyAvg.replace('ms', '') });
+      console.log(latencies)
 
       return {
         data: {
@@ -211,6 +119,9 @@ export default {
       };
     },
     rps: function() {
+      if (!this.results) {
+        return;
+      }
       let latencies = this.results.map(function(i) { return i.result.requestsPerSec });
 
       return {
@@ -234,9 +145,14 @@ export default {
       };
     }
   },
+ beforeMount: async function() {
+   let r = await fetch('/mock/tests/44');
+      this.results = await r.json();
+      console.log('r')
+  },
   data() {
     return {
-      results: [],
+      results: null,
       
       dataCompletedTasksChart: {
         data: {

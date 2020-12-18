@@ -17,18 +17,29 @@ const testRegions = [
     "us-west-2"
 ];
 
-ORMONGO_RS_URLmongodb://lon5-c15-2.mongo.objectrocket.com:43777,lon5-c15-0.mongo.objectrocket.com:43777,lon5-c15-1.mongo.objectrocket.com:43777/?replicaSet=85f67b4a3642435fb30e556e12b2cdae&ssl=true
-ORMONGO_URLmongodb://lon5-c15-2.mongo.objectrocket.com:43777?ssl=true
+let mongoDetails = {};
 
-app.use(mongo({
-    host: 'localhost',
-    port: 27017,
-    db: 'test',
-    authSource: 'admin',
-    max: 100,
-    min: 1,
-    acquireTimeoutMillis: 100
-  }));
+if ('ORMONGO_RS_URL' in process.env) {
+    mongoDetails = {
+        uri: process.env['ORMONGO_RS_URL'],
+        max: 100,
+        min: 1
+    }
+} else {
+    mongoDetails = {
+        host: 'localhost',
+        port: 27017,
+        db: 'test',
+        authSource: 'admin',
+        max: 100,
+        min: 1,
+        acquireTimeoutMillis: 100
+      }
+}
+
+console.log(mongoDetails);
+
+app.use(mongo(mongoDetails));
 
 router.get("/regions", async (ctx) => {
     ctx.body = "regions";
@@ -56,7 +67,7 @@ router.post("/tests", async (ctx) => {
     const dbInsertion = await ctx.db.collection('tests').insert({ status: 'pending'});
     const testId = dbInsertion.ops[0]._id.toString();
     ctx.body = testId;
-    runTestWrapper(ctx,testId, regions, args);
+    runTestWrapper(ctx,testId, regions, parsedArgs);
 });
 
 let runTestWrapper = async(ctx, testId, regions, args)=> {
