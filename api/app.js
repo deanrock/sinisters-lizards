@@ -1,5 +1,7 @@
 const Koa = require('koa');
 const koaRouter = require("koa-router");
+var proxy = require('koa-proxy');
+const { exec } = require("child_process");
 const SSH2Promise = require('ssh2-promise');
 
 const sshconfig = {
@@ -15,11 +17,6 @@ const dbConfig = {
 const app = new Koa();
 const router = new koaRouter();
 
-router.get("/", (ctx) => {
-    ctx.body = "test";
-});
-
-//return json with avaliable regions
 router.get("/regions", async (ctx) => {
     ctx.body = "regions";
 });
@@ -46,9 +43,31 @@ router.get("/tests/:id", async (ctx) => {
 
 //establish ssh tunnel and runs test
 let runTest = async () => {
- //establish shh tunel and run tests
- //save results into database
-}
+    //establish shh tunel and run tests
+    //save results into database
+   }
+
+// Vue
+app.use(proxy({
+    host:  'http://localhost:8080',
+    match: /^\/(ui|css|js)\//
+}));
+
+exec("npm run serve", {
+    cwd: '../client/',
+}, (error, stdout, stderr) => {
+    if (error) {
+        console.log(`error: ${error.message}`);
+        return;
+    }
+    if (stderr) {
+        console.log(`stderr: ${stderr}`);
+        return;
+    }
+    console.log(`stdout: ${stdout}`);
+});
+
+// End Vue
 
 app.use(router.routes()).use(router.allowedMethods());
 
